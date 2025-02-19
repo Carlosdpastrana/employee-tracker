@@ -1,4 +1,7 @@
 const inquirer = require('inquirer');
+const prompt = inquirer.createPromptModule();
+
+// Import your database functions from queries.js
 const {
   viewDepartments,
   viewRoles,
@@ -10,7 +13,7 @@ const {
 } = require('./queries');
 
 const startApp = () => {
-  inquirer.prompt({
+  prompt({
     type: 'list',
     name: 'choice',
     message: 'What would you like to do?',
@@ -37,11 +40,15 @@ const startApp = () => {
           await viewEmployees();
           break;
         case 'Add a department':
-          const { deptName } = await inquirer.prompt({ type: 'input', name: 'deptName', message: 'Department name?' });
+          const { deptName } = await prompt({
+            type: 'input',
+            name: 'deptName',
+            message: 'Department name?',
+          });
           await addDepartment(deptName);
           break;
         case 'Add a role':
-          const { roleName, roleSalary, roleDept } = await inquirer.prompt([
+          const { roleName, roleSalary, roleDept } = await prompt([
             { type: 'input', name: 'roleName', message: 'Role name?' },
             { type: 'input', name: 'roleSalary', message: 'Salary?' },
             { type: 'input', name: 'roleDept', message: 'Department ID?' },
@@ -49,7 +56,7 @@ const startApp = () => {
           await addRole(roleName, roleSalary, roleDept);
           break;
         case 'Add an employee':
-          const { firstName, lastName, roleId, managerId } = await inquirer.prompt([
+          const { firstName, lastName, roleId, managerId } = await prompt([
             { type: 'input', name: 'firstName', message: 'First name?' },
             { type: 'input', name: 'lastName', message: 'Last name?' },
             { type: 'input', name: 'roleId', message: 'Role ID?' },
@@ -58,15 +65,18 @@ const startApp = () => {
           await addEmployee(firstName, lastName, roleId, managerId || null);
           break;
         case 'Update an employee role':
-          const { employeeId, newRoleId } = await inquirer.prompt([
+          const { employeeId, newRoleId } = await prompt([
             { type: 'input', name: 'employeeId', message: 'Employee ID?' },
             { type: 'input', name: 'newRoleId', message: 'New Role ID?' },
           ]);
           await updateEmployeeRole(employeeId, newRoleId);
           break;
-        default:
+        case 'Exit':
+          console.log('Goodbye!');
           process.exit();
       }
+
+      // Restart app after each action
       startApp();
     });
 };
